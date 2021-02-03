@@ -63,14 +63,14 @@ paperclipJarUrl="https://papermc.io/api/v2/projects/paper/versions/1.16.5/builds
 
 if [[ ! $(whoami) == 'minecraft' ]]; then # prevent people from running stuff under the wrong users
 	clear
-	echo -e "`toilet "HEY!"`\nDon't run this script as the wrong user!"| lolcat
+	echo -e "$(toilet "HEY!")\nDon't run this script as the wrong user!"| lolcat
 	exit 1
 fi
 
 countdown(){
 	local OLD_IFS="${IFS}"
 	IFS=":"
-	local ARR=( $1 )
+	local ARR=( "$1" )
 	local SECONDS=$((  (ARR[0] * 60 * 60) + (ARR[1] * 60) + ARR[2]  ))
 	local START=$(date +%s)
 	local END=$((START + SECONDS))
@@ -90,11 +90,11 @@ countdown(){
 cleanServer(){ # Clean up our server files
 	echo "cleanServer: Cleaning!"
 	if [[ $daysToCleanLogs != "0" ]];then
-		echo "cleanServer: Cleaned `find logs/ -maxdepth 1 -type f -mtime +"$daysToCleanLogs" -name '*.log.gz' -delete | wc -l` server logs older than $daysToCleanLogs days."
+		echo "cleanServer: Cleaned $(find logs/ -maxdepth 1 -type f -mtime +"$daysToCleanLogs" -name '*.log.gz' -delete | wc -l) server logs older than $daysToCleanLogs days."
 	fi
 	
 	if [[ $daysToCleanFtbBackups != "0" ]];then
-		echo "cleanServer: Cleaned `find backups/ -maxdepth 1 -type d -mtime +"$daysToCleanLogs" -name '*.log.gz' -delete | wc -l` FTB backups older than $daysToCleanFtbBackups days."
+		echo "cleanServer: Cleaned $(find backups/ -maxdepth 1 -type d -mtime +"$daysToCleanLogs" -name '*.log.gz' -delete | wc -l) FTB backups older than $daysToCleanFtbBackups days."
 	fi
 
 	if [[ $cleanCacheJars != "0" ]]; then
@@ -108,7 +108,7 @@ cleanServer(){ # Clean up our server files
 	fi
 
 	if [[ $cleanHsErrLogs != "0" ]]; then
-		echo "cleanServer: Cleaned `rm -vf hs_err_pid* | wc -l` Java hard-crash logs."
+		echo "cleanServer: Cleaned $(rm -vf hs_err_pid* | wc -l) Java hard-crash logs."
 	fi
 	
 	if [[ $cleanOpsList != "0" ]]; then 
@@ -190,7 +190,7 @@ case "$1" in
 			freePort
 			
 			# Okay, now we start the program
-			$processname $processargs
+			$processname "$processargs"
 
 			# Not run until the service has stopped.
 			rm running.lck
@@ -203,7 +203,7 @@ case "$1" in
 			elif [[ $restartDelay == "-1" ]]; then
 				echo -e "Not restarting. Waiting for instruction.\nPress Enter to restart the server..."
 				broadcastmessage ".\` :warning: \` Alert! $service stopped! NOT RESTARTING!!" &
-				read unused
+				read -r unused
 			else
 				echo -e "Restarting $service automatically in...\n(Press Ctrl-C to cancel)"
 				broadcastmessage ".\` :warning: \` Alert! $service stopped! Restarting!" &
@@ -243,7 +243,7 @@ case "$1" in
 			echo "Server already running! Attach to the session with 'tmux a -t $service'"
 		else
 			echo "Starting $service..."
-			bash $0 start
+			bash "$0" start
 		fi
 	;;
 esac
