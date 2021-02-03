@@ -21,7 +21,7 @@ jarFile="paperclip.jar" # Name of the jarfile (if it's updatable dynamically it'
 
 # Alternative jars
 #  - "velocity.jar" - Velocity's latest 1.16.5 jar - * Proxy *
-#  - "tuinity-paperclip.jar" - Tuinity's latest 1.16.5 jar - * Proxy *
+#  - "tuinity-paperclip.jar" - Tuinity's latest 1.16.5 jar - * Server Jar (Update regularly!) *
 
 # Server folder cleanups
 # only executed at server start, set to 0 to disable
@@ -44,18 +44,18 @@ jvmArgs="-Xms$initialRam -Xmx$maximumRam -XX:+UseG1GC -XX:+ParallelRefProcEnable
 jarCmdline="--host $bindingAddress --port $serverPort --max-players $maxPlayers nogui -W:worlds" # Adding -W <folder> puts worlds there instead of in ./*
 processargs="-Dgamemode=$service -server $jvmArgs -jar $jarFile $jarCmdline"
 
-# For waterfall only
+# For Proxy only
 # Comment the above lines out and uncomment these if you're using this for a waterfall instance
 # jvmArgs="-XX:+UseG1GC -XX:+UseStringDeduplication -Dio.netty.recycler.maxCapacity.default=20000 -XX:G1HeapRegionSize=4M"
 # processargs="-Dgamemode=$service -server -Xms$initialRam -Xmx$maximumRam -Xmn512M $jvmArgs -Dfile.encoding=UTF-8 -jar $jarFile"
 
 # Remote jar locations
-# waterfallJarUrl="https://papermc.io/api/v2/projects/waterfall/versions/1.16/builds/395/downloads/waterfall-1.16-395.jar" # Waterfall 1.16.5
+waterfallJarUrl="https://papermc.io/api/v2/projects/waterfall/versions/1.16/builds/395/downloads/waterfall-1.16-395.jar" # Waterfall 1.16.5
 paperclipJarUrl="https://papermc.io/api/v2/projects/paper/versions/1.16.5/builds/457/downloads/paper-1.16.5-457.jar" # Paperclip 1.16.5
 
 # Alternate jar locations
-# velocityJarUrl="https://versions.velocitypowered.com/download/1.1.3.jar" # Velocity 1.16.5
-# tuinityJarUrl="https://ci.codemc.io/job/Spottedleaf/job/Tuinity/lastSuccessfulBuild/artifact/tuinity-paperclip.jar" # Tuinity 1.16.5
+velocityJarUrl="https://versions.velocitypowered.com/download/1.1.3.jar" # Velocity 1.16.5
+tuinityJarUrl="https://ci.codemc.io/job/Spottedleaf/job/Tuinity/lastSuccessfulBuild/artifact/tuinity-paperclip.jar" # Tuinity 1.16.5
 
 # End configuration
 
@@ -70,11 +70,22 @@ fi
 countdown(){
 	local OLD_IFS="${IFS}"
 	IFS=":"
-	local ARR=( "$1" )
-	local SECONDS=$((  (ARR[0] * 60 * 60) + (ARR[1] * 60) + ARR[2]  ))
-	local START=$(date +%s)
-	local END=$((START + SECONDS))
-	local CUR=$START
+
+	local ARR
+	ARR=( "$1" )
+
+	local SECONDS
+	SECONDS=$((  (ARR[0] * 60 * 60) + (ARR[1] * 60) + ARR[2]  ))
+
+	local START
+	START=$(date +%s)
+
+	local END
+	END=$((START + SECONDS))
+
+	local CUR
+	CUR=$START
+
 	while [[ $CUR -lt $END ]]
 	do
 		CUR=$(date +%s)
