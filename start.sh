@@ -19,6 +19,10 @@ jarFile="paperclip.jar" # Name of the jarfile (if it's updatable dynamically it'
 #  - "waterfall.jar" - PaperMC's latest 1.16.5 Waterfall - * Recommended proxy *
 #  - "paperclip.jar" - PaperMC's latest 1.16.5 paperclip version (Update regularly!)
 
+# Alternative jars
+#  - "velocity.jar" - Velocity's latest 1.16.5 jar - * Proxy *
+#  - "tuinity-paperclip.jar" - Tuinity's latest 1.16.5 jar - * Proxy *
+
 # Server folder cleanups
 # only executed at server start, set to 0 to disable
 daysToCleanLogs="0" # logs older than this many days are removed
@@ -26,7 +30,6 @@ daysToCleanFtbBackups="0" # FTBU (most FTB modpack servers use this mod) server 
 
 # 1 = enable, 0 = disable
 cleanHsErrLogs="0" # clean all hard-crash logs made by java
-cleanProtocolSupportLogs="0" # clean all ProtocolSupport error logs ( https://build.true-games.org/job/ProtocolSupport/ )
 cleanCacheJars="0" # clean Paperclip cache jars
 cleanWaterfallModules="0" # clean Waterfall module jars
 cleanOpsList="0" # remove op perms from all known players
@@ -41,14 +44,18 @@ jvmArgs="java -Xms10G -Xmx10G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGC
 jarCmdline="--host $bindingAddress --port $serverPort --max-players $maxPlayers nogui -W:worlds" # Adding -W <folder> puts worlds there instead of in ./
 processargs="-Dgamemode=$service -server $jvmArgs -jar $jarFile $jarCmdline"
 
-# For bungee/waterfall only
-# Comment the above lines out and uncomment these if you're using this for a bungeecord/waterfall instance
+# For waterfall only
+# Comment the above lines out and uncomment these if you're using this for a waterfall instance
 # jvmArgs="-XX:+UseG1GC -XX:+UseStringDeduplication -Dio.netty.recycler.maxCapacity.default=20000 -XX:G1HeapRegionSize=4M"
 # processargs="-Dgamemode=$service -server -Xms$initialRam -Xmx$maximumRam -Xmn512M $jvmArgs -Dfile.encoding=UTF-8 -jar $jarFile"
 
 # Remote jar locations
-# waterfallJarUrl="https://papermc.io/api/v2/projects/waterfall/versions/1.16/builds/395/downloads/waterfall-1.16-395.jar" # waterfall 1.16.5
-paperclipJarUrl="https://papermc.io/api/v2/projects/paper/versions/1.16.5/builds/457/downloads/paper-1.16.5-457.jar" # paperclip 1.16.5
+# waterfallJarUrl="https://papermc.io/api/v2/projects/waterfall/versions/1.16/builds/395/downloads/waterfall-1.16-395.jar" # Waterfall 1.16.5
+paperclipJarUrl="https://papermc.io/api/v2/projects/paper/versions/1.16.5/builds/457/downloads/paper-1.16.5-457.jar" # Paperclip 1.16.5
+
+# Alternate jar locations
+# velocityJarUrl="https://versions.velocitypowered.com/download/1.1.3.jar" # Velocity 1.16.5
+# tuinityJarUrl="https://ci.codemc.io/job/Spottedleaf/job/Tuinity/lastSuccessfulBuild/artifact/tuinity-paperclip.jar" # Tuinity 1.16.5
 
 # End configuration
 
@@ -80,7 +87,7 @@ countdown(){
 	echo "        "
 }
 
-cleanServer(){ # clean up our server files
+cleanServer(){ # Clean up our server files
 	echo "cleanServer: Cleaning!"
 	if [[ $daysToCleanLogs != "0" ]];then
 		echo "cleanServer: Cleaned `find logs/ -maxdepth 1 -type f -mtime +"$daysToCleanLogs" -name '*.log.gz' -delete | wc -l` server logs older than $daysToCleanLogs days."
@@ -99,11 +106,7 @@ cleanServer(){ # clean up our server files
 		rm -rf modules/ modules.yml
 		echo "cleanServer: Cleaned BungeeCord module jars."
 	fi
-	
-	if [[ $cleanProtocolSupportLogs != "0" ]]; then
-		echo "cleanServer: Cleaned `rm -vf ProtocolSupport-errlog | wc -l` ProtocolSupport error logs."
-	fi
-		
+
 	if [[ $cleanHsErrLogs != "0" ]]; then
 		echo "cleanServer: Cleaned `rm -vf hs_err_pid* | wc -l` Java hard-crash logs."
 	fi
@@ -126,7 +129,7 @@ cleanServer(){ # clean up our server files
 	echo "cleanServer: Complete!"
 }
 
-jarUpdate(){ # update our server's jars and a few other things
+jarUpdate(){ # Update our server's jars and a few other things
 
 	if [[ $updateCheckInterval != "0" ]]; then
 		if [[ $(find "$jarFile" -mtime +"$updateCheckInterval" -print) ]]; then 
@@ -139,7 +142,7 @@ jarUpdate(){ # update our server's jars and a few other things
 	fi
 }
 
-doJarUpdate() { # moved so forcing jar updates is a little less of a mess
+doJarUpdate() { # Moved so forcing jar updates is a little less of a mess
 	echo "jarUpdate: attempting to update server jar..."
 	
 	if   [[ "$jarFile" == "paperclip.jar" ]]; then # paperclip 1.16.5
@@ -152,16 +155,26 @@ doJarUpdate() { # moved so forcing jar updates is a little less of a mess
 		echo "jarUpdate: updating $jarFile with latest version..."
 		wget --no-use-server-timestamps -q --show-progress --no-check-certificate -O "$jarFile" "$waterfallJarUrl"
 
-	else # jar not recognized
+	elif   [[ "$jarFile" == "tuinity-paperclip.jar" ]]; then # tuinity-paperclip 1.16.5
+		rm -rf cache/ # special part because paperclip creates caches of a couple jarfiles
+		echo "jarUpdate: updating $jarFile with latest version..."
+		wget --no-use-server-timestamps -q --show-progress --no-check-certificate -O "$jarFile" "$tuinityJarUrl"
+
+	elif [[ "$jarFile" == "velocity.jar" ]]; then # velocity 1.16.5
+		rm -rf modules/ modules.yml cache/
+		echo "jarUpdate: updating $jarFile with latest version..."
+		wget --no-use-server-timestamps -q --show-progress --no-check-certificate -O "$jarFile" "$velocityJarUrl"
+
+	else # Jar not recognized
 		echo "jarUpdate: not updating jar (non-standard jarfile named or CI server unavailable)"
 	fi
 }
 
-freePort() { # forcibly frees server's running port just in case it wasn't cleanly stopped or some real bad things happened.
+freePort() { # Forcibly frees server's running port just in case it wasn't cleanly stopped or some real bad things happened.
 	echo "freePort: Attempting to forcibly unbind port. If this asks for a password, contact your systems administrator."
-	# needs '<yourusername> ALL=(ALL:ALL) NOPASSWD: /bin/fuser' in /etc/sudoers
-	# this will grant this user to use the command fuser without a password being asked.
-	# you should be fully apprised of what 'fuser' does before allowing anyone you don't trust to access this machine's user.
+	# Needs '<yourusername> ALL=(ALL:ALL) NOPASSWD: /bin/fuser' in /etc/sudoers
+	# This will grant this user to use the command fuser without a password being asked.
+	# You should be fully apprised of what 'fuser' does before allowing anyone you don't trust to access this machine's user.
 	sudo fuser -s -k "$serverPort"/tcp
 	echo "freePort: Done!"
 }
@@ -176,10 +189,10 @@ case "$1" in
 			jarUpdate
 			freePort
 			
-			# okay, now we start the program
+			# Okay, now we start the program
 			$processname $processargs
 
-			# not run until the service has stopped.
+			# Not run until the service has stopped.
 			rm running.lck
 			echo "ALERT! $service has stopped!"
 			if [[ $restartDelay == "0" ]]; then
