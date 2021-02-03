@@ -31,7 +31,7 @@ daysToCleanFtbBackups="0" # FTBU (most FTB modpack servers use this mod) server 
 # 1 = enable, 0 = disable
 cleanHsErrLogs="0" # clean all hard-crash logs made by java
 cleanCacheJars="0" # clean Paperclip cache jars
-cleanWaterfallModules="0" # clean Waterfall module jars
+cleanProxyModules="0" # clean proxied module jars
 cleanOpsList="0" # remove op perms from all known players
 cleanWhiteList="0" # de-whitelist all players
 cleanUsercache="0" # remove the UUID/username cache file
@@ -101,10 +101,10 @@ cleanServer(){ # Clean up our server files
 		rm -rf cache/
 		echo "cleanServer: Cleaned Paperclip cached jars."
 	fi
-	
-	if [[ $cleanCacheJars != "0" ]]; then
-		rm -rf modules/ modules.yml
-		echo "cleanServer: Cleaned BungeeCord module jars."
+
+	if [[ $cleanProxyModules != "0" ]]; then
+		rm -rf modules/modules.yml
+		echo "cleanServer: Cleaned Proxy cached jars."
 	fi
 
 	if [[ $cleanHsErrLogs != "0" ]]; then
