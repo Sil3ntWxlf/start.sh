@@ -1,4 +1,5 @@
 #| A minecraft server start script
+___________________________________
 **_Must have lolcat & toilet installed on box_**
 ####
 
