@@ -35,6 +35,7 @@ cleanProxyModules="0" # clean proxied module jars
 cleanOpsList="0" # remove op perms from all known players
 cleanWhiteList="0" # de-whitelist all players
 cleanUsercache="0" # remove the UUID/username cache file
+cleanLPData="0" # Cleans out LuckPerms userdata
 
 # Execution options
 processname="java" # point this at your java binary
@@ -103,7 +104,7 @@ cleanServer(){ # Clean up our server files
 	if [[ $daysToCleanLogs != "0" ]];then
 		echo "cleanServer: Cleaned $(find logs/ -maxdepth 1 -type f -mtime +"$daysToCleanLogs" -name '*.log.gz' -delete | wc -l) server logs older than $daysToCleanLogs days."
 	fi
-	
+
 	if [[ $daysToCleanFtbBackups != "0" ]];then
 		echo "cleanServer: Cleaned $(find backups/ -maxdepth 1 -type d -mtime +"$daysToCleanLogs" -name '*.log.gz' -delete | wc -l) FTB backups older than $daysToCleanFtbBackups days."
 	fi
@@ -131,6 +132,10 @@ cleanServer(){ # Clean up our server files
 		rm "whitelist.json"
 		echo "cleanServer: Dewhitelisted all players."
 	fi
+
+	if [[ "$cleanLPData" != "0" ]];then
+      echo "cleanServer: Cleaned $(find plugins/LuckPerms/perms/ -maxdepth 1 -type f -mtime +"$cleanLPData" -name 'perms' -delete | wc -l) LuckPerms userdata older than $cleanLPData days."
+  fi
 
 	if [[ $cleanUsercache != "0" ]]; then 
 		rm "usercache.json"
