@@ -27,6 +27,7 @@ jarFile="paperclip.jar" # Name of the jarfile (if it's updatable dynamically it'
 # only executed at server start, set to 0 to disable
 daysToCleanLogs="0" # logs older than this many days are removed
 daysToCleanFtbBackups="0" # FTB (most FTB modpack servers use this mod) server backups older than this many days are removed
+daysTocleanLPData="0" # Cleans out LuckPerms userdata
 
 # 1 = enable, 0 = disable
 cleanHsErrLogs="0" # clean all hard-crash logs made by java
@@ -35,7 +36,7 @@ cleanProxyModules="0" # clean proxied module jars
 cleanOpsList="0" # remove op perms from all known players
 cleanWhiteList="0" # de-whitelist all players
 cleanUsercache="0" # remove the UUID/username cache file
-cleanLPData="0" # Cleans out LuckPerms userdata
+
 
 # Execution options
 processname="java" # point this at your java binary
@@ -109,6 +110,10 @@ cleanServer(){ # Clean up our server files
 		echo "cleanServer: Cleaned $(find backups/ -maxdepth 1 -type d -mtime +"$daysToCleanLogs" -name '*.log.gz' -delete | wc -l) FTB backups older than $daysToCleanFtbBackups days."
 	fi
 
+	if [[ "$daysTocleanLPData" != "0" ]];then
+      echo "cleanServer: Cleaned $(find plugins/LuckPerms/perms/ -maxdepth 1 -type f -mtime +"$daysTocleanLPData" -name 'perms' -delete | wc -l) LuckPerms userdata older than $daysTocleanLPData days."
+  fi
+
 	if [[ $cleanCacheJars != "0" ]]; then
 		rm -rf cache/
 		echo "cleanServer: Cleaned Paperclip cached jars."
@@ -132,10 +137,6 @@ cleanServer(){ # Clean up our server files
 		rm "whitelist.json"
 		echo "cleanServer: Dewhitelisted all players."
 	fi
-
-	if [[ "$cleanLPData" != "0" ]];then
-      echo "cleanServer: Cleaned $(find plugins/LuckPerms/perms/ -maxdepth 1 -type f -mtime +"$cleanLPData" -name 'perms' -delete | wc -l) LuckPerms userdata older than $cleanLPData days."
-  fi
 
 	if [[ $cleanUsercache != "0" ]]; then 
 		rm "usercache.json"
