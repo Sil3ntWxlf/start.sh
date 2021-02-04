@@ -7,8 +7,8 @@ service="<server>" # Name of the service
 initialRam="4G" # RAM the server will start with
 maximumRam="4G" # RAM the server will try to limit itself to
 maxPlayers="256" # Maximum player count (overrides server.properties)
-serverPort="25565" # Server port (overrides server.properties) ** DOES NOT FUNCTION WITH WATERFALL OR BUNGEECORD. Set these in config.yml after you've started and stopped it once **
-bindingAddress="0.0.0.0" # Bind address (overrides server.properties) ** DOES NOT FUNCTION WITH WATERFALL OR BUNGEECORD. Set these in config.yml after you've started and stopped it once **
+serverPort="25565" # Server port (overrides server.properties) ** DOES NOT FUNCTION WITH WATERFALL OR Velocity. Set these in config.yml after you've started and stopped it once **
+bindingAddress="0.0.0.0" # Bind address (overrides server.properties) ** DOES NOT FUNCTION WITH WATERFALL OR Velocity. Set these in config.yml after you've started and stopped it once **
 restartDelay="10" # Wait this long before restarting (0 to just hard-exit the server on stop, -1 to wait for user input to restart)
 
 # Check for jar updates every this many days (determined from server jar's last downloaded date)
@@ -163,17 +163,17 @@ doJarUpdate() { # Moved so forcing jar updates is a little less of a mess
 	echo "jarUpdate: attempting to update server jar..."
 	
 	if   [[ "$jarFile" == "paperclip.jar" ]]; then # paperclip 1.16.5
-		rm -rf cache/ # special part because paperclip creates caches of a couple jarfiles
+		rm -rf cache/ # Special part because paperclip creates caches of a couple jarfiles
 		echo "jarUpdate: updating $jarFile with latest version..."
 		wget --no-use-server-timestamps -q --show-progress --no-check-certificate -O "$jarFile" "$paperclipJarUrl"
 		
-	elif [[ "$jarFile" == "waterfall.jar" ]]; then # waterfall 1.16.5
+	elif [[ "$jarFile" == "waterfall.jar" ]]; then # Waterfall 1.16.5
 		rm -rf modules/ modules.yml cache/
 		echo "jarUpdate: updating $jarFile with latest version..."
 		wget --no-use-server-timestamps -q --show-progress --no-check-certificate -O "$jarFile" "$waterfallJarUrl"
 
 	elif   [[ "$jarFile" == "tuinity-paperclip.jar" ]]; then # tuinity-paperclip 1.16.5
-		rm -rf cache/ # special part because tuinity-paperclip creates caches of a couple jarfiles
+		rm -rf cache/ # Special part because tuinity-paperclip creates caches of a couple jarfiles
 		echo "jarUpdate: updating $jarFile with latest version..."
 		wget --no-use-server-timestamps -q --show-progress --no-check-certificate -O "$jarFile" "$tuinityJarUrl"
 
