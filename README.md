@@ -1,6 +1,6 @@
-#| A minecraft server start script
+#**A minecraft server start script**
 ___________________________________
-**_Must have lolcat & toilet installed on box_**
+***_Must have lolcat & toilet installed on box_***
 ####
 
 Links | Software
