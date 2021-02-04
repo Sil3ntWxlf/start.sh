@@ -26,7 +26,7 @@ jarFile="paperclip.jar" # Name of the jarfile (if it's updatable dynamically it'
 # Server folder cleanups
 # only executed at server start, set to 0 to disable
 daysToCleanLogs="0" # logs older than this many days are removed
-daysToCleanFtbBackups="0" # FTBU (most FTB modpack servers use this mod) server backups older than this many days are removed
+daysToCleanFtbBackups="0" # FTB (most FTB modpack servers use this mod) server backups older than this many days are removed
 
 # 1 = enable, 0 = disable
 cleanHsErrLogs="0" # clean all hard-crash logs made by java
@@ -114,7 +114,7 @@ cleanServer(){ # Clean up our server files
 	fi
 
 	if [[ $cleanProxyModules != "0" ]]; then
-		rm -rf modules/modules.yml
+		rm -rf modules/ modules.yml
 		echo "cleanServer: Cleaned Proxy cached jars."
 	fi
 
@@ -167,7 +167,7 @@ doJarUpdate() { # Moved so forcing jar updates is a little less of a mess
 		wget --no-use-server-timestamps -q --show-progress --no-check-certificate -O "$jarFile" "$waterfallJarUrl"
 
 	elif   [[ "$jarFile" == "tuinity-paperclip.jar" ]]; then # tuinity-paperclip 1.16.5
-		rm -rf cache/ # special part because paperclip creates caches of a couple jarfiles
+		rm -rf cache/ # special part because tuinity-paperclip creates caches of a couple jarfiles
 		echo "jarUpdate: updating $jarFile with latest version..."
 		wget --no-use-server-timestamps -q --show-progress --no-check-certificate -O "$jarFile" "$tuinityJarUrl"
 
@@ -214,7 +214,7 @@ case "$1" in
 			elif [[ $restartDelay == "-1" ]]; then
 				echo -e "Not restarting. Waiting for instruction.\nPress Enter to restart the server..."
 				broadcastmessage ".\` :warning: \` Alert! $service stopped! NOT RESTARTING!!" &
-				read -r unused
+				read -r
 			else
 				echo -e "Restarting $service automatically in...\n(Press Ctrl-C to cancel)"
 				broadcastmessage ".\` :warning: \` Alert! $service stopped! Restarting!" &
