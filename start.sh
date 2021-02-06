@@ -63,7 +63,7 @@ tuinityJarUrl="https://ci.codemc.io/job/Spottedleaf/job/Tuinity/lastSuccessfulBu
 
 # If you touch what's below here, it could vaporize your cat!
 
-if [[ ! $(whoami) == 'minecraft' ]]; then # prevent people from running stuff under the wrong users
+if [[ ! $(whoami) == '<user>' ]]; then # prevent people from running stuff under the wrong users
 	clear
 	echo -e "$(toilet "HEY!")\nDon't run this script as the wrong user!"| lolcat
 	exit 1
@@ -77,7 +77,7 @@ countdown(){
 	ARR=( "$1" )
 
 	local SECONDS
-	SECONDS=$((  (ARR[0] * 60 * 60) + (ARR[1] * 60) + ARR[2]  ))
+	SECONDS=$((  (ARR[1] * 60 * 60) + (ARR[2] * 60) + ARR[3]  ))
 
 	local START
 	START=$(date +%s)
@@ -201,7 +201,7 @@ case "$1" in
 		while true; do
 			touch running.lck
 			toilet -F crop -F border "$service" | lolcat # stop removing this. i mean it.
-			broadcastmessage "$service started." &
+			echo "$service started." | wall &
 			cleanServer
 			jarUpdate
 			freePort
@@ -214,16 +214,16 @@ case "$1" in
 			echo "ALERT! $service has stopped!"
 			if [[ $restartDelay == "0" ]]; then
 				echo "Not restarting. Shell exiting. Restart with ./$0"
-				broadcastmessage ".\` :warning: \` Alert! $service stopped! NOT RESTARTING!!" &
+				echo "Alert! $service stopped! NOT RESTARTING!!" | wall &
 				sleep 1
 				exit 0
 			elif [[ $restartDelay == "-1" ]]; then
 				echo -e "Not restarting. Waiting for instruction.\nPress Enter to restart the server..."
-				broadcastmessage ".\` :warning: \` Alert! $service stopped! NOT RESTARTING!!" &
+				echo "Alert! $service stopped! NOT RESTARTING!!" | wall &
 				read -r
 			else
 				echo -e "Restarting $service automatically in...\n(Press Ctrl-C to cancel)"
-				broadcastmessage ".\` :warning: \` Alert! $service stopped! Restarting!" &
+				echo "Alert! $service stopped! Restarting!" | wall &
 				countdown "00:00:$restartDelay"
 			fi
 		done
