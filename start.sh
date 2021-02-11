@@ -3,7 +3,7 @@
 # Offered under MIT license
 # USING THIS SCRIPT TO START YOUR SERVER SIGNIFIES YOU WILL COMPLY WITH MOJANG'S EULA.
 
-service="<server>" # Name of the service
+service="<creative>" # Name of the service
 initialRam="4G" # RAM the server will start with
 maximumRam="4G" # RAM the server will try to limit itself to
 maxPlayers="256" # Maximum player count (overrides server.properties)
@@ -112,7 +112,7 @@ cleanServer(){ # Clean up our server files
 
 	if [[ "$daysTocleanLPData" != "0" ]];then
       echo "cleanServer: Cleaned $(find plugins/LuckPerms/perms/ -maxdepth 1 -type f -mtime +"$daysTocleanLPData" -name 'perms' -delete | wc -l) LuckPerms userdata older than $daysTocleanLPData days."
-  fi
+  	fi
 
 	if [[ $cleanCacheJars != "0" ]]; then
 		rm -rf cache/
@@ -127,30 +127,30 @@ cleanServer(){ # Clean up our server files
 	if [[ $cleanHsErrLogs != "0" ]]; then
 		echo "cleanServer: Cleaned $(rm -vf hs_err_pid* | wc -l) Java hard-crash logs."
 	fi
-	
-	if [[ $cleanOpsList != "0" ]]; then 
+
+	if [[ $cleanOpsList != "0" ]]; then
 		rm "ops.json"
 		echo "cleanServer: Deopped all players."
 	fi
 
-	if [[ $cleanWhiteList != "0" ]]; then 
+	if [[ $cleanWhiteList != "0" ]]; then
 		rm "whitelist.json"
 		echo "cleanServer: Dewhitelisted all players."
 	fi
 
-	if [[ $cleanUsercache != "0" ]]; then 
+	if [[ $cleanUsercache != "0" ]]; then
 		rm "usercache.json"
 		echo "cleanServer: Flushed user cache."
 	fi
-	
+
 	echo "cleanServer: Complete!"
 }
 
 jarUpdate(){ # Update our server's jars and a few other things
 
 	if [[ $updateCheckInterval != "0" ]]; then
-		if [[ $(find "$jarFile" -mtime +"$updateCheckInterval" -print) ]]; then 
-				doJarUpdate
+		if [[ ! -f "$jarFile" ]] || [[ $(find "$jarFile" -mtime +"$updateCheckInterval" -print) ]]; then
+			doJarUpdate
 		else
 			echo "jarUpdate: not updating jar (too young)"
 		fi
@@ -161,12 +161,12 @@ jarUpdate(){ # Update our server's jars and a few other things
 
 doJarUpdate() { # Moved so forcing jar updates is a little less of a mess
 	echo "jarUpdate: attempting to update server jar..."
-	
+
 	if   [[ "$jarFile" == "paperclip.jar" ]]; then # paperclip 1.16.5
 		rm -rf cache/ # Special part because paperclip creates caches of a couple jarfiles
 		echo "jarUpdate: updating $jarFile with latest version..."
 		wget --no-use-server-timestamps -q --show-progress --no-check-certificate -O "$jarFile" "$paperclipJarUrl"
-		
+
 	elif [[ "$jarFile" == "waterfall.jar" ]]; then # Waterfall 1.16.5
 		rm -rf modules/ modules.yml cache/
 		echo "jarUpdate: updating $jarFile with latest version..."
@@ -205,9 +205,9 @@ case "$1" in
 			cleanServer
 			jarUpdate
 			freePort
-			
+
 			# Okay, now we start the program
-			$processname "$processargs"
+			$processname $processargs
 
 			# Not run until the service has stopped.
 			rm running.lck
