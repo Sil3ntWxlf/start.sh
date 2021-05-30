@@ -3,13 +3,13 @@
 # Offered under MIT license
 # USING THIS SCRIPT TO START YOUR SERVER SIGNIFIES YOU WILL COMPLY WITH MOJANG'S EULA.
 
-service="<creative>" # Name of the service
+service="<server>" # Name of the service
 initialRam="4G" # RAM the server will start with
 maximumRam="4G" # RAM the server will try to limit itself to
 maxPlayers="256" # Maximum player count (overrides server.properties)
 serverPort="25565" # Server port (overrides server.properties) ** DOES NOT FUNCTION WITH WATERFALL OR Velocity. Set these in config.yml after you've started and stopped it once **
 bindingAddress="0.0.0.0" # Bind address (overrides server.properties) ** DOES NOT FUNCTION WITH WATERFALL OR Velocity. Set these in config.yml after you've started and stopped it once **
-restartDelay="10" # Wait this long before restarting (0 to just hard-exit the server on stop, -1 to wait for user input to restart)
+restartDelay="-1" # Wait this long before restarting (0 to just hard-exit the server on stop, -1 to wait for user input to restart)
 
 # Check for jar updates every this many days (determined from server jar's last downloaded date)
 # Disable by setting to 0, but set the jarfile variable properly!
@@ -74,10 +74,11 @@ countdown(){
 	IFS=":"
 
 	local ARR
-	ARR=( "$1" )
+	# shellcheck disable=SC2206
+	ARR=( $1 )
 
 	local SECONDS
-	SECONDS=$((  (ARR[1] * 60 * 60) + (ARR[2] * 60) + ARR[3]  ))
+	SECONDS=$((  (ARR[0] * 60 * 60) + (ARR[1] * 60) + ARR[2]  ))
 
 	local START
 	START=$(date +%s)
@@ -112,7 +113,7 @@ cleanServer(){ # Clean up our server files
 
 	if [[ "$daysTocleanLPData" != "0" ]];then
       echo "cleanServer: Cleaned $(find plugins/LuckPerms/perms/ -maxdepth 1 -type f -mtime +"$daysTocleanLPData" -name 'perms' -delete | wc -l) LuckPerms userdata older than $daysTocleanLPData days."
-  	fi
+  fi
 
 	if [[ $cleanCacheJars != "0" ]]; then
 		rm -rf cache/
@@ -207,23 +208,23 @@ case "$1" in
 			freePort
 
 			# Okay, now we start the program
-			$processname $processargs
+			$processname "$processargs"
 
 			# Not run until the service has stopped.
 			rm running.lck
 			echo "ALERT! $service has stopped!"
 			if [[ $restartDelay == "0" ]]; then
 				echo "Not restarting. Shell exiting. Restart with ./$0"
-				echo "Alert! $service stopped! NOT RESTARTING!!" | wall &
+				echo "Alert! $service stopped! NOT RESTARTING!!"
 				sleep 1
 				exit 0
 			elif [[ $restartDelay == "-1" ]]; then
 				echo -e "Not restarting. Waiting for instruction.\nPress Enter to restart the server..."
-				echo "Alert! $service stopped! NOT RESTARTING!!" | wall &
+				echo "Alert! $service stopped! NOT RESTARTING!!"
 				read -r
 			else
 				echo -e "Restarting $service automatically in...\n(Press Ctrl-C to cancel)"
-				echo "Alert! $service stopped! Restarting!" | wall &
+				echo "Alert! $service stopped! Restarting!"
 				countdown "00:00:$restartDelay"
 			fi
 		done
@@ -236,10 +237,6 @@ case "$1" in
 	jarupdate)
 		echo "jarUpdate: Forcing a jar update!"
 		doJarUpdate
-	;;
-	screen)
-		echo "GNU screen is no longer supported. please install & configure tmux."
-		exit 1
 	;;
 	restart)
 		echo "restarter: Attempting to restart the server via tmux-send"
