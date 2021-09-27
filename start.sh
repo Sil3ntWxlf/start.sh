@@ -9,19 +9,18 @@ maximumRam="4G" # RAM the server will try to limit itself to
 maxPlayers="256" # Maximum player count (overrides server.properties)
 serverPort="25565" # Server port (overrides server.properties) ** DOES NOT FUNCTION WITH WATERFALL OR Velocity. Set these in config.yml after you've started and stopped it once **
 bindingAddress="0.0.0.0" # Bind address (overrides server.properties) ** DOES NOT FUNCTION WITH WATERFALL OR Velocity. Set these in config.yml after you've started and stopped it once **
-restartDelay="-1" # Wait this long before restarting (0 to just hard-exit the server on stop, -1 to wait for user input to restart)
+restartDelay="10" # Wait this long before restarting (0 to just hard-exit the server on stop, -1 to wait for user input to restart)
 
 # Check for jar updates every this many days (determined from server jar's last downloaded date)
 # Disable by setting to 0, but set the jarfile variable properly!
 updateCheckInterval="3" # DO NOT SET THIS BELOW 3! Seriously!
 jarFile="paperclip.jar" # Name of the jarfile (if it's updatable dynamically it'll be updated)
 # Supported auto-update jar names
-#  - "waterfall.jar" - PaperMC's latest 1.16.5 Waterfall - * Recommended proxy *
-#  - "paperclip.jar" - PaperMC's latest 1.16.5 paperclip version (Update regularly!)
+#  - "waterfall.jar" - PaperMC's latest 1.17.1 Waterfall
+#  - "paperclip.jar" - PaperMC's latest 1.17.1 paperclip version (Update regularly!)
 
 # Alternative jars
-#  - "velocity.jar" - Velocity's latest 1.16.5 jar - * Proxy *
-#  - "tuinity-paperclip.jar" - Tuinity's latest 1.16.5 jar - * Server Jar (Update regularly!) *
+#  - "velocity.jar" - Velocity's latest 1.17.1 jar - * Proxy * - * Recommended proxy *
 
 # Server folder cleanups
 # only executed at server start, set to 0 to disable
@@ -52,12 +51,11 @@ processargs="-Dgamemode=$service -server $jvmArgs -jar $jarFile $jarCmdline"
 # processargs="-Dgamemode=$service -server -Xms$initialRam -Xmx$maximumRam -Xmn512M $jvmArgs -Dfile.encoding=UTF-8 -jar $jarFile"
 
 # Remote jar locations
-waterfallJarUrl="https://papermc.io/api/v2/projects/waterfall/versions/1.16/builds/395/downloads/waterfall-1.16-395.jar" # Waterfall 1.16.5
-paperclipJarUrl="https://papermc.io/api/v2/projects/paper/versions/1.16.5/builds/457/downloads/paper-1.16.5-467.jar" # Paperclip 1.16.5
+waterfallJarUrl="https://papermc.io/api/v2/projects/waterfall/versions/1.17/builds/449/downloads/waterfall-1.17-449.jar" # Waterfall 1.17.1
+paperclipJarUrl="https://papermc.io/api/v2/projects/paper/versions/1.17.1/builds/279/downloads/paper-1.17.1-279.jar" # Paperclip 1.17.1
 
 # Alternate jar locations
-velocityJarUrl="https://versions.velocitypowered.com/download/1.1.3.jar" # Velocity 1.16.5
-tuinityJarUrl="https://ci.codemc.io/job/Spottedleaf/job/Tuinity/lastSuccessfulBuild/artifact/tuinity-paperclip.jar" # Tuinity 1.16.5
+velocityJarUrl="https://versions.velocitypowered.com/download/3.0.x-SNAPSHOT.jar" # Velocity 1.17.1
 
 # End configuration
 
@@ -172,11 +170,6 @@ doJarUpdate() { # Moved so forcing jar updates is a little less of a mess
 		rm -rf modules/ modules.yml cache/
 		echo "jarUpdate: updating $jarFile with latest version..."
 		wget --no-use-server-timestamps -q --show-progress --no-check-certificate -O "$jarFile" "$waterfallJarUrl"
-
-	elif   [[ "$jarFile" == "tuinity-paperclip.jar" ]]; then # tuinity-paperclip 1.16.5
-		rm -rf cache/ # Special part because tuinity-paperclip creates caches of a couple jarfiles
-		echo "jarUpdate: updating $jarFile with latest version..."
-		wget --no-use-server-timestamps -q --show-progress --no-check-certificate -O "$jarFile" "$tuinityJarUrl"
 
 	elif [[ "$jarFile" == "velocity.jar" ]]; then # velocity 1.16.5
 		rm -rf modules/ modules.yml cache/
