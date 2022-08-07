@@ -16,11 +16,8 @@ restartDelay="10" # Wait this long before restarting (0 to just hard-exit the se
 updateCheckInterval="3" # DO NOT SET THIS BELOW 3! Seriously!
 jarFile="paperclip.jar" # Name of the jarfile (if it's updatable dynamically it'll be updated)
 # Supported auto-update jar names
-#  - "waterfall.jar" - PaperMC's latest 1.17.1 Waterfall
-#  - "paperclip.jar" - PaperMC's latest 1.17.1 paperclip version (Update regularly!)
-
-# Alternative jars
-#  - "velocity.jar" - Velocity's latest 1.17.1 jar - * Proxy * - * Recommended proxy *
+#  - "velocity.jar" - Velocity's latest 1.19.2 jar - * Proxy * - * Recommended proxy *
+#  - "paperclip.jar" - PaperMC's latest 1.19.2 paperclip version (Update regularly!)
 
 # Server folder cleanups
 # only executed at server start, set to 0 to disable
@@ -36,7 +33,6 @@ cleanOpsList="0" # remove op perms from all known players
 cleanWhiteList="0" # de-whitelist all players
 cleanUsercache="0" # remove the UUID/username cache file
 
-
 # Execution options
 processname="java" # point this at your java binary
 
@@ -46,16 +42,13 @@ jarCmdline="--host $bindingAddress --port $serverPort --max-players $maxPlayers 
 processargs="-Dgamemode=$service -server $jvmArgs -jar $jarFile $jarCmdline"
 
 # For Proxy only
-# Comment the above lines out and uncomment these if you're using this for a waterfall instance
-# jvmArgs="-XX:+UseG1GC -XX:+UseStringDeduplication -Dio.netty.recycler.maxCapacity.default=20000 -XX:G1HeapRegionSize=4M"
+# Comment the above lines out and uncomment these if you're using this for a velocity instance
+# jvmArgs="-XX:+UseG1GC -XX:G1HeapRegionSize=4M -XX:+UnlockExperimentalVMOptions -XX:+ParallelRefProcEnabled -XX:+AlwaysPreTouch -XX:MaxInlineLevel=15"
 # processargs="-Dgamemode=$service -server -Xms$initialRam -Xmx$maximumRam -Xmn512M $jvmArgs -Dfile.encoding=UTF-8 -jar $jarFile"
 
 # Remote jar locations
-waterfallJarUrl="https://papermc.io/api/v2/projects/waterfall/versions/1.17/builds/449/downloads/waterfall-1.17-449.jar" # Waterfall 1.17.1
-paperclipJarUrl="https://papermc.io/api/v2/projects/paper/versions/1.17.1/builds/279/downloads/paper-1.17.1-279.jar" # Paperclip 1.17.1
-
-# Alternate jar locations
-velocityJarUrl="https://versions.velocitypowered.com/download/3.0.x-SNAPSHOT.jar" # Velocity 1.17.1
+velocityJarUrl="https://api.papermc.io/v2/projects/velocity/versions/3.1.2-SNAPSHOT/builds/169/downloads/velocity-3.1.2-SNAPSHOT-169.jar" # Velocity 1.19.2
+paperclipJarUrl="https://api.papermc.io/v2/projects/paper/versions/1.19.2/builds/113/downloads/paper-1.19.2-113.jar" # Paperclip 1.19.2
 
 # End configuration
 
@@ -161,17 +154,12 @@ jarUpdate(){ # Update our server's jars and a few other things
 doJarUpdate() { # Moved so forcing jar updates is a little less of a mess
 	echo "jarUpdate: attempting to update server jar..."
 
-	if   [[ "$jarFile" == "paperclip.jar" ]]; then # paperclip 1.16.5
+	if   [[ "$jarFile" == "paperclip.jar" ]]; then # paperclip 1.17.1
 		rm -rf cache/ # Special part because paperclip creates caches of a couple jarfiles
 		echo "jarUpdate: updating $jarFile with latest version..."
 		wget --no-use-server-timestamps -q --show-progress --no-check-certificate -O "$jarFile" "$paperclipJarUrl"
 
-	elif [[ "$jarFile" == "waterfall.jar" ]]; then # Waterfall 1.16.5
-		rm -rf modules/ modules.yml cache/
-		echo "jarUpdate: updating $jarFile with latest version..."
-		wget --no-use-server-timestamps -q --show-progress --no-check-certificate -O "$jarFile" "$waterfallJarUrl"
-
-	elif [[ "$jarFile" == "velocity.jar" ]]; then # velocity 1.16.5
+	elif [[ "$jarFile" == "velocity.jar" ]]; then # velocity 1.17.1
 		rm -rf modules/ modules.yml cache/
 		echo "jarUpdate: updating $jarFile with latest version..."
 		wget --no-use-server-timestamps -q --show-progress --no-check-certificate -O "$jarFile" "$velocityJarUrl"
